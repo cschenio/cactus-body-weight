@@ -2,7 +2,7 @@ import React, {useRef} from 'react';
 import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, TextInput, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const InputPage = () => {
   const refWeight = useRef();
@@ -12,17 +12,13 @@ const InputPage = () => {
       <DateBox name="Date:"/>
       <FloatingBox name="Weight:" suffix="kg" maxNum="200" refMain={refWeight} refSubmit={refFat}/>
       <FloatingBox name="Fat:" suffix="%" maxNum="100" refMain={refFat} refSubmit={null}/>
-      <InputPageFotter />
     </ScrollView>
   );
 }
 
-const InputPageFotter = () => {
+export const InputPageFooter = () => {
   return (
-    <View style={styles.buttonGroup}>
-      <Button title="Done" icon="done-all-outline"/>
-      <Button title="Add" icon="plus-square-outline"/>
-    </View>
+    <Button title="Done" icon="done-all-outline"/>
   )
 }
 
@@ -36,7 +32,11 @@ const DateBox = (pros) => {
       mode = {'date'}
       is24Hour = {true}
       display = "default"
-      onChange = {(event, selectedDate) => setDate(selectedDate)}
+      onChange = {(event, selectedDate) => {
+        if (selectedDate) {
+          setDate(selectedDate);
+        }
+      }}
     />
   )
 };
@@ -48,7 +48,7 @@ const FloatingBox = (pros) => {
   return (
     <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{pros.refMain.current.focus()}}>
       <Text style = {styles.floatingText}>
-        {pros.name}  
+        {pros.name}
       </Text>
       <TextInput
         style = {styles.floatingInput}
@@ -64,11 +64,11 @@ const FloatingBox = (pros) => {
         returnKeyType={Platform.OS === 'ios' ? 'done' : 'next'}
         ref = {pros.refMain}
         // Set the focus/blur style by using isActive.
-        onFocus={() => setActive(true)} 
+        onFocus={() => setActive(true)}
         onBlur={() => setActive(false)}
       />
       <Text style = {styles.floatingText}>
-        {pros.suffix}  
+        {pros.suffix}
       </Text>
     </Pressable>
   );
