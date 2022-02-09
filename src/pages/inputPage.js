@@ -51,7 +51,7 @@ const FloatingBox = (pros) => {
         value = {parseFloat(number)>parseFloat(pros.maxNum)?pros.maxNum:number}
         placeholder = "0.0"
         keyboardType = "numeric"
-        // placeholderTextColor = Theme["color-info-300"],
+        placeholderTextColor = {Theme["color-info-300"]}
         maxLength = {5}
         // reference
         onSubmitEditing = {pros.refSubmit?() => pros.refSubmit.current.focus():null}
