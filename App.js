@@ -8,53 +8,32 @@ import {
     Card,
     Divider,
     List,
-    ListItem
+    ListItem,
+    Button,
+    ButtonGroup,
 } from '@ui-kitten/components';
 import { default as theme } from './theme.json';
 
-const HomeScreen = () => (
-  <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text category='h1' status='primary'>HOME</Text>
-    <Text category='h2'>
-        Hi
-    </Text>
-    <Text>
-        I am a boy. This is a pen.
-    </Text>
-    <ListDividersShowcase/>
+import InputPage from "pages/inputPage";
+import ChartPage from "pages/chartPage";
+import DataPage from "pages/dataPage";
+
+const HomeScreen = () => {
+  const [page, setPage] = React.useState("Input");
+
+  return (
+  <Layout style={{position: "absolute", top: "10%"}}>
+      <ButtonGroup>
+        <Button onPress={() => setPage("Input")}>Input</Button>
+        <Button onPress={() => setPage("Chart")}>Chart</Button>
+        <Button onPress={() => setPage("Data")}>Data</Button>
+      </ButtonGroup>
+      { page == "Input" && <InputPage/> }
+      { page == "Chart" && <ChartPage/> }
+      { page == "Data" && <DataPage/> }
   </Layout>
-);
-
-const data = new Array(8).fill({
-    title: 'Item',
-    description: 'Description for Item',
-});
-
-const ListDividersShowcase = () => {
-
-    const renderItem = ({ item, index }) => (
-      <ListItem
-        title={`${item.title} ${index + 1}`}
-        description={`${item.description} ${index + 1}`}
-      />
-    );
-
-    return (
-      <List
-        style={styles.container}
-        data={data}
-        ItemSeparatorComponent={Divider}
-        renderItem={renderItem}
-      />
-    );
+  );
 };
-
-const styles = StyleSheet.create({
-    container: {
-      width: 400,
-      maxHeight: 200,
-    },
-});
 
 export default () => (
   <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
