@@ -27,13 +27,7 @@ const InputPageFotter = () => {
 }
 
 const DateBox = (pros) => {
-  // const refDate = useRef();
-
   const [date, setDate] = React.useState(new Date());
-
-  const onChange = (event, selectedDate) => {
-    setDate(selectedDate);
-  };
 
   return (
     <DateTimePicker
@@ -42,7 +36,7 @@ const DateBox = (pros) => {
       mode = {'date'}
       is24Hour = {true}
       display = "default"
-      onChange = {onChange}
+      onChange = {(event, selectedDate) => setDate(selectedDate)}
     />
   )
 };
