@@ -2,8 +2,7 @@ import React, {useRef} from 'react';
 import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, TextInput, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
-import DatePicker from 'react-native-date-picker'
-
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 const InputPage = () => {
   const refWeight = useRef();
@@ -28,11 +27,24 @@ const InputPageFotter = () => {
 }
 
 const DateBox = (pros) => {
-  return (
-    <View>
+  // const refDate = useRef();
 
-    </View>
-  );
+  const [date, setDate] = React.useState(new Date());
+
+  const onChange = (event, selectedDate) => {
+    setDate(selectedDate);
+  };
+
+  return (
+    <DateTimePicker
+      style = {styles.DateContainer}
+      value = {date}
+      mode = {'date'}
+      is24Hour = {true}
+      display = "default"
+      onChange = {onChange}
+    />
+  )
 };
 
 const FloatingBox = (pros) => {
@@ -73,14 +85,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 20,
-    width: "60%",
+    width: "33%",
+    textAlign: "center",
     fontWeight: "bold",
   },
   floatingText:{
     paddingHorizontal: 2,
     paddingVertical: 12,
     fontSize: 18,
-    width: "20%",
+    width: "33%",
     textAlign: "center",
   },
   boxContainerFocus:{
@@ -98,6 +111,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     backgroundColor: Theme["color-info-200"],
+  },
+  DateContainer:{
+    margin: 10,
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: Theme["color-info-100"],
+    height: "25%",
   },
   container:{
     height: "100%",
