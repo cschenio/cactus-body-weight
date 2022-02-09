@@ -2,7 +2,6 @@ import React from 'react';
 import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, TextInput, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
-import { borderTopColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const DataPage = () => {
   return (
@@ -122,5 +121,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
 });
+
+export const DataPageFooter = () => {
+  return <Text>Data</Text>;
+}
 
 export default DataPage;

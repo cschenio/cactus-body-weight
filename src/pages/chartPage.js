@@ -5,4 +5,8 @@ const ChartPage = () => {
   return <Text>chart</Text>;
 }
 
+export const ChartPageFooter = () => {
+  return <Text>chart</Text>;
+}
+
 export default ChartPage;
