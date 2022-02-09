@@ -5,6 +5,7 @@ import InputPage, { InputPageFooter } from "pages/inputPage";
 import ChartPage, { ChartPageFooter } from "pages/chartPage";
 import DataPage, { DataPageFooter } from "pages/dataPage";
 import Button from "components/button";
+import TabGroup from "components/tabGroup";
 import FooterLayout from 'layout/footerLayout';
 
 const HomeScreen = () => {
@@ -12,17 +13,13 @@ const HomeScreen = () => {
 
   return (
   <View style={styles.base}>
-    <ImageBackground resizeMode="cover" style={styles.heroImg} source={require("@assets/hero.jpg")}>
+    <View style={styles.heroImg}>
       <View style={styles.stickyBottom}>
         <View style={styles.container}>
-          <View style={styles.buttonGroup}>
-            <Button title="Input" icon="flash-outline" onPress={() => setPage("Input")}/>
-            <Button title="Chart" icon="activity-outline" onPress={() => setPage("Chart")}/>
-            <Button title="Data" icon="layers-outline" onPress={() => setPage("Data")}/>
-          </View>
+          <TabGroup page={page} onClick={(page) => setPage(page)}/>
         </View>
       </View>
-    </ImageBackground>
+    </View>
     <ScrollView>
       <View style={styles.container}>
         { page == "Input" && <InputPage/> }
