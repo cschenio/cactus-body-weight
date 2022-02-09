@@ -36,7 +36,7 @@ const DateBox = (pros) => {
 };
 
 const FloatingBox = (pros) => {
-  const [number, onChangeNumber] = React.useState(null);
+  const [number, setNumber] = React.useState(null);
   const [isActive, setActive] = React.useState(false);
 
   return (
@@ -46,18 +46,18 @@ const FloatingBox = (pros) => {
       </Text>
       <TextInput
         style = {styles.floatingInput}
-        // value
-        onChangeText={onChangeNumber}
+        // Check the input number in TextInput.
+        onChangeText={setNumber}
         value = {parseFloat(number)>parseFloat(pros.maxNum)?pros.maxNum:number}
         placeholder = "0.0"
         keyboardType = "numeric"
         placeholderTextColor = {Theme["color-info-300"]}
         maxLength = {5}
-        // reference
+        // Handle the references.
         onSubmitEditing = {pros.refSubmit?() => pros.refSubmit.current.focus():null}
         returnKeyType={Platform.OS === 'ios' ? 'done' : 'next'}
         ref = {pros.refMain}
-        // focus style
+        // Set the focus/blur style by using isActive.
         onFocus={() => setActive(true)} 
         onBlur={() => setActive(false)}
       />
