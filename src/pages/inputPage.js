@@ -12,8 +12,6 @@ const InputPage = () => {
       <DateBox name="Date:"/>
       <FloatingBox name="Weight:" suffix="kg" maxNum="200" refMain={refWeight} refSubmit={refFat}/>
       <FloatingBox name="Fat:" suffix="%" maxNum="100" refMain={refFat} refSubmit={null}/>
-      <Button title="Add" icon="plus-square-outline"/>
-
     </ScrollView>
   );
 }
@@ -34,7 +32,11 @@ const DateBox = (pros) => {
       mode = {'date'}
       is24Hour = {true}
       display = "default"
-      onChange = {(event, selectedDate) => setDate(selectedDate)}
+      onChange = {(event, selectedDate) => {
+        if (selectedDate) {
+          setDate(selectedDate);
+        }
+      }}
     />
   )
 };
