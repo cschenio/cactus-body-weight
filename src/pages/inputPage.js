@@ -8,11 +8,11 @@ const InputPage = () => {
   const refWeight = useRef();
   const refFat = useRef();
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <DateBox name="Date:"/>
       <FloatingBox name="Weight:" suffix="kg" maxNum="200" refMain={refWeight} refSubmit={refFat}/>
       <FloatingBox name="Fat:" suffix="%" maxNum="100" refMain={refFat} refSubmit={null}/>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -24,20 +24,55 @@ export const InputPageFooter = () => {
 
 const DateBox = (pros) => {
   const [date, setDate] = React.useState(new Date());
+  const [isActive, setActive] = React.useState(false);
 
   return (
-    <DateTimePicker
-      style = {styles.DateContainer}
-      value = {date}
-      mode = {'date'}
-      is24Hour = {true}
-      display = "default"
-      onChange = {(event, selectedDate) => {
-        if (selectedDate) {
-          setDate(selectedDate);
+    Platform.OS === 'ios' ? (
+      (
+        <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{setActive(true)}}>
+          <Text style = {styles.floatingText}>
+            {pros.name}
+          </Text>
+          <DateTimePicker
+            style = {styles.DateContainer}
+            value = {date}
+            mode = {'date'}
+            is24Hour = {true}
+            display = "default"
+            onChange = {(event, selectedDate) => {
+              if (selectedDate) {
+                setDate(selectedDate);
+              }
+              setActive(false);
+            }}/>
+        </Pressable>)
+    ):( // android
+      <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{setActive(true)}}>
+        <Text style = {styles.floatingText}>
+          {pros.name}
+        </Text>
+        <TextInput
+          style = {styles.floatingInput}
+          // Check the input number in TextInput.
+          value = {`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`}
+          editable = {false}
+        />
+        { isActive &&
+          (<DateTimePicker
+            style = {styles.DateContainer}
+            value = {date}
+            mode = {'date'}
+            is24Hour = {true}
+            display = "default"
+            onChange = {(event, selectedDate) => {
+              if (selectedDate) {
+                setDate(selectedDate);
+              }
+              setActive(false);
+            }}/>)
         }
-      }}
-    />
+      </Pressable>
+    )
   )
 };
 
@@ -78,16 +113,16 @@ const styles = StyleSheet.create({
   floatingInput: {
     paddingHorizontal: 12,
     paddingVertical: 12,
-    fontSize: 20,
-    width: "33%",
+    fontSize: 18,
+    width: "40%",
     textAlign: "center",
     fontWeight: "bold",
   },
   floatingText:{
     paddingHorizontal: 2,
     paddingVertical: 12,
-    fontSize: 18,
-    width: "33%",
+    fontSize: 16,
+    width: "30%",
     textAlign: "center",
   },
   boxContainerFocus:{
@@ -107,11 +142,8 @@ const styles = StyleSheet.create({
     backgroundColor: Theme["color-info-200"],
   },
   DateContainer:{
-    margin: 10,
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: Theme["color-info-100"],
-    height: "25%",
+    height: "100%",
+    width: "40%",
   },
   container:{
     height: "100%",
