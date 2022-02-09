@@ -1,24 +1,62 @@
 import React, {useRef} from 'react';
-import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, TextInput, View, ScrollView, Pressable} from 'react-native';
-import Button from "components/button";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
+
+import * as Theme from "@assets/theme.json";
+import Button from "components/button";
+import * as RecordStore from "dataModel/recordStore";
+
 
 const InputPage = () => {
   const refWeight = useRef();
   const refFat = useRef();
+
+  const [record, setRecord] = React.useState(null);
+  const [records, setRecords] = React.useState(null);
+  const today = new Date();
+
   return (
     <View style={styles.container}>
       <DateBox name="Date:"/>
       <FloatingBox name="Weight:" suffix="kg" maxNum="200" refMain={refWeight} refSubmit={refFat}/>
       <FloatingBox name="Fat:" suffix="%" maxNum="100" refMain={refFat} refSubmit={null}/>
+
+      {/*
+      Below is for testing RecordStore.
+      */}
+      <Button
+        title="Fetch"
+        icon="done-all-outline"
+        onPress={async () => {
+          const newRecord = await RecordStore.get(today);
+          setRecord(newRecord);
+        }}/>
+      {record && <Text>{record}</Text>}
+      <Button
+        title="Fetch All"
+        icon="done-all-outline"
+        onPress={async () => {
+          const newRecords = await RecordStore.getRange(
+            moment(today).subtract(2, "days"),
+            moment(today).add(2, "days"),
+          );
+          setRecords(newRecords);
+        }}/>
+      {records && <Text>{records}</Text>}
     </View>
   );
 }
 
 export const InputPageFooter = () => {
   return (
-    <Button title="Done" icon="done-all-outline"/>
+    <Button title="Done" icon="done-all-outline" onPress={async () => {
+      await RecordStore.save({
+        date: new Date(),
+        weight: 100.0,
+        fat: 25.0,
+      });
+    }}/>
   )
 }
 
