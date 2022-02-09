@@ -26,27 +26,28 @@ const DateBox = (pros) => {
   const [date, setDate] = React.useState(new Date());
   const [isActive, setActive] = React.useState(false);
 
-  return (
-    Platform.OS === 'ios' ? (
-      (
-        <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{setActive(true)}}>
-          <Text style = {styles.floatingText}>
-            {pros.name}
-          </Text>
-          <DateTimePicker
-            style = {styles.DateContainer}
-            value = {date}
-            mode = {'date'}
-            is24Hour = {true}
-            display = "default"
-            onChange = {(event, selectedDate) => {
-              if (selectedDate) {
-                setDate(selectedDate);
-              }
-              setActive(false);
-            }}/>
-        </Pressable>)
-    ):( // android
+  if (Platform.OS === 'ios'){
+    return (
+      <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{setActive(true)}}>
+        <Text style = {styles.floatingText}>
+          {pros.name}
+        </Text>
+        <DateTimePicker
+          style = {styles.DateContainer}
+          value = {date}
+          mode = {'date'}
+          is24Hour = {true}
+          display = "default"
+          onChange = {(event, selectedDate) => {
+            if (selectedDate) {
+              setDate(selectedDate);
+            }
+            setActive(false);
+          }}/>
+      </Pressable>)
+  }
+  else{ // Android
+    return (
       <Pressable style = {isActive?styles.boxContainerFocus:styles.boxContainerBlur} onPress={()=>{setActive(true)}}>
         <Text style = {styles.floatingText}>
           {pros.name}
@@ -71,9 +72,8 @@ const DateBox = (pros) => {
               setActive(false);
             }}/>)
         }
-      </Pressable>
-    )
-  )
+      </Pressable>)
+  }
 };
 
 const FloatingBox = (pros) => {
