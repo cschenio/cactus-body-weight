@@ -4,12 +4,34 @@ import { View, ImageBackground, ScrollView, Text } from 'react-native';
 import InputPage, { InputPageFooter } from "pages/inputPage";
 import ChartPage, { ChartPageFooter } from "pages/chartPage";
 import DataPage, { DataPageFooter } from "pages/dataPage";
-import Button from "components/button";
 import TabGroup from "components/tabGroup";
 import FooterLayout from 'layout/footerLayout';
+import { useSwipe } from './src/hooks/useSwipe';
 
 const HomeScreen = () => {
   const [page, setPage] = React.useState("Input");
+
+  const onSwipeRight = () => {
+    if (page === "Input") {
+      setPage("Input");
+    } else if (page === "Chart") {
+      setPage("Input");
+    } else if (page === "Data") {
+      setPage("Chart");
+    }
+  }
+
+  const onSwipeLeft = () => {
+    if (page === "Input") {
+      setPage("Chart");
+    } else if (page === "Chart") {
+      setPage("Data");
+    } else if (page === "Data") {
+      setPage("Data");
+    }
+  }
+
+  const { onTouchStart, onTouchEnd } = useSwipe(onSwipeLeft, onSwipeRight);
 
   return (
   <View style={styles.base}>
@@ -20,7 +42,7 @@ const HomeScreen = () => {
         </View>
       </View>
     </View>
-    <ScrollView>
+    <ScrollView onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <View style={styles.container}>
         { page == "Input" && <InputPage/> }
         { page == "Chart" && <ChartPage/> }
