@@ -38,7 +38,7 @@ const InputPage = () => {
         icon="done-all-outline"
         onPress={async () => {
           const newRecords = await RecordStore.getRange(
-            moment(today).subtract(2, "days"),
+            moment(today).subtract(100, "days"),
             moment(today).add(2, "days"),
           );
           setRecords(newRecords);
