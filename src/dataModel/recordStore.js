@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { json } from "d3";
 import moment from "moment";
 
 const store = "@RecordStore";
@@ -26,7 +27,8 @@ export const get = async (date) => {
   }
 
   try {
-    return await AsyncStorage.getItem(formatKey(date));
+    const jsonString = await AsyncStorage.getItem(formatKey(date));
+    return JSON.parse(jsonString);
   } catch (error) {
     throw error;
   }
@@ -40,10 +42,11 @@ export const getRange = async (dateBegin, dateEnd) => {
   const allKeys = await AsyncStorage.getAllKeys();
   const beginKey = formatKey(dateBegin);
   const endKey = formatKey(dateEnd);
-  const keys = allKeys.filter(key => key >= beginKey && key <= endKey);
+  const keys = allKeys.filter(key => key >= beginKey && key <= endKey).sort();
 
   try {
-    return await AsyncStorage.multiGet(keys);
+    const jsonStrings = await AsyncStorage.multiGet(keys);
+    return jsonStrings.map((j) => JSON.parse(j[1]));
   } catch (error) {
     throw error;
   }
