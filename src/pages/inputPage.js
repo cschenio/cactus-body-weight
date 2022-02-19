@@ -32,7 +32,7 @@ const InputPage = () => {
           const newRecord = await RecordStore.get(today);
           setRecord(newRecord);
         }}/>
-      {record && <Text>{record}</Text>}
+      {record && <Text>{JSON.stringify(record)}</Text>}
       <Button
         title="Fetch All"
         icon="done-all-outline"
@@ -43,7 +43,7 @@ const InputPage = () => {
           );
           setRecords(newRecords);
         }}/>
-      {records && <Text>{records}</Text>}
+      {records && <Text>{JSON.stringify(records)}</Text>}
     </View>
   );
 }

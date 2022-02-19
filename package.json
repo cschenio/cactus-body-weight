@@ -9,21 +9,28 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@babel/runtime": "^7.17.2",
     "@eva-design/eva": "^2.1.1",
+    "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/art": "^1.2.0",
     "@react-native-community/datetimepicker": "4.0.0",
+    "d3": "^7.3.0",
     "eva-icons": "^1.1.3",
     "expo": "~44.0.0",
     "expo-dev-client": "~0.8.4",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-chart-kit-with-pressable-bar-graph": "^6.11.4",
+    "react-native-charts-wrapper": "^0.5.7",
     "react-native-eva-icons": "^1.3.1",
-    "react-native-svg": "12.1.1",
-    "react-native-web": "0.17.1",
-    "@react-native-async-storage/async-storage": "~1.15.0"
+    "react-native-svg": "^12.1.1",
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
