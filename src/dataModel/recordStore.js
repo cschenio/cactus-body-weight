@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { json } from "d3";
 import moment from "moment";
 
 const store = "@RecordStore";
