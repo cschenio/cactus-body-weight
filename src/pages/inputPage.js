@@ -27,13 +27,15 @@ const InputPage = () => {
 
 export const InputPageFooter = () => {
   return (
-    <Button title="Done" icon="done-all-outline" onPress={async () => {
-      await RecordStore.save({
-        date: new Date(),
-        weight: 100.0,
-        fat: 25.0,
-      });
-    }}/>
+    <View style={styles.buttonGroup}>
+      <Button title="Done" icon="done-all-outline" onPress={async () => {
+        await RecordStore.save({
+          date: new Date(),
+          weight: 100.0,
+          fat: 25.0,
+        });
+      }}/>
+    </View>
   )
 }
 

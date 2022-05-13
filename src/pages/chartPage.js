@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import * as RecordStore from "dataModel/recordStore";
 import * as _ from "lodash";
 import Button from "components/button";
@@ -24,7 +24,7 @@ const ChartPage = () => {
   }, []);
 
   return( 
-    <View>
+    <View style={styles.buttonGroup}>
       <Button
         title="Fetch data a week ago"
         icon="cloud-download-outline"
@@ -80,5 +80,12 @@ const getPassRecords = async(dayCount) =>{
   return newRecords;
 }
 
+const styles = StyleSheet.create({
+  buttonGroup: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+  },
+});
 
 export default ChartPage;

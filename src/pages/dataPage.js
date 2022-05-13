@@ -3,6 +3,7 @@ import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, Alert, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
 import moment from "moment";
+import * as _ from "lodash";
 import * as RecordStore from "dataModel/recordStore";
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
@@ -11,7 +12,7 @@ import * as Sharing from "expo-sharing";
 const DataPage = () => {
   const [records, setRecords] = React.useState([]);
   useEffect(async () => { 
-    setRecords(await fetchData(500));
+    setRecords(await RecordStore.getAll());
   }, []);
 
   return (
@@ -44,7 +45,7 @@ export const DataPageFooter = () => {
         title="Export" 
         icon="download-outline" 
         onPress = {async () => {
-          const newRecords = await fetchData(50);
+          const newRecords = await RecordStore.getAll();
           const exportStatus = await exportRecords(newRecords);
           setInfo(exportStatus["info"]);
       }}/>
@@ -56,6 +57,9 @@ const DataBoxTable = (props) => {
   if(props.records.length == 0){
     return <View></View>;
   }
+  // reverse the records from new to old
+  _.reverse(props.records);
+
   return props.records.map((r) =>{
     return (
       <DataBox date={moment(r['date']).format("YYYYMMDD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
@@ -84,24 +88,17 @@ const fetchData = async (endDay) => {
 }
 
 const exportRecords = async (records) => {
-  const fakeRecords = [
-    {date: "2-12", weight: "53.2", fat: "23.4"},
-    {date: "2-13", weight: "52.5", fat: "21.6"},
-    {date: "1-12", weight: "50.2", fat: "22.0"},
-    {date: "2-15", weight: "56.4", fat: "19.4"},
-  ]
-
   var status={};
 
   // CSV comtent.
   const today = new Date();
   const nameSuffix = moment(today).format("YYYYMMDD");
   const headerString = 'date,weight,fat\n';
-  const rowString = fakeRecords.map(d=>d["date"]+","+d["weight"]+","+d["fat"]+"\n").join('');
+  const rowString = records.map(d=>d["date"]+","+d["weight"]+","+d["fat"]+"\n").join('');
   const csvString = `${headerString}${rowString}`;
 
   // Ask permission and save the file
-  const pathToWrite = FileSystem.documentDirectory+"test"+nameSuffix+".csv";
+  const pathToWrite = FileSystem.documentDirectory+"CactusBodyWeight_"+nameSuffix+".csv";
   const permissions = await MediaLibrary.requestPermissionsAsync();
   status['permission'] = permissions;
   if(permissions.granted){
