@@ -113,10 +113,10 @@ const exportRecords = async (records) => {
       status['info'] = "Can't generate file."
       return status;
     });
-    // Save tofile to 'CactusBidyWwight' folder in Album('Picture').
+    // Save tofile to 'CactusBodyWeight' folder in Album('Picture').
     if (Platform.OS === 'android'){
       const asset = await MediaLibrary.createAssetAsync(pathToWrite);
-      await MediaLibrary.createAlbumAsync("CactusBidyWwight", asset, false);
+      await MediaLibrary.createAlbumAsync("CactusBodyWeight", asset, false);
     }
     // Share the file
     // Reference: https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
