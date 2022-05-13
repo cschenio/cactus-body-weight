@@ -1,71 +1,177 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import * as Theme from "@assets/theme.json";
-import {StyleSheet, Text, TextInput, View, ScrollView, Pressable} from 'react-native';
+import {StyleSheet, Text, Alert, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
+import moment from "moment";
+import * as RecordStore from "dataModel/recordStore";
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from "expo-sharing";
 
 const DataPage = () => {
+  const [records, setRecords] = React.useState([]);
+  useEffect(async () => { 
+    setRecords(await fetchData(500));
+  }, []);
+
   return (
     <>
       <DataHeader/>
       <ScrollView style={styles.container}>
-        <DataBox date="0123" weight="52.3" fat="26" />
-        <DataBox date="1229" weight="54" fat="27" />
-        <DataBox date="1109" weight="55" fat="21" />
-        <DataBox date="1001" weight="54.2" fat="26.55" />
-        <DataBox date="0931" weight="54.22" fat="29.00" />
-      <DataPageFotter />
+        <DataBoxTable records={records} />
       </ScrollView>
+      
     </>
   );
 }
 
-const DataPageFotter = () => {
+export const DataPageFooter = () => {
+  const [info, setInfo] = React.useState("");
+  const [firstTime, setFirstTime] = React.useState(true);
+  useEffect(()=>{
+    setFirstTime(false);
+  });
+  useEffect(() => { 
+    if (!firstTime){
+      // No idea how to set useEffect to avoid runining alert in the first render.
+      alertWithoutButtons(info);
+    }
+  }, [info]);
+
   return (
     <View style={styles.buttonGroup}>
-      <Button title="Export" icon="download-outline"/>
+      <Button 
+        title="Export" 
+        icon="download-outline" 
+        onPress = {async () => {
+          const newRecords = await fetchData(50);
+          const exportStatus = await exportRecords(newRecords);
+          setInfo(exportStatus["info"]);
+      }}/>
     </View>
   )
 }
 
-export const DataHeader = (pros) => {
+const DataBoxTable = (props) => {
+  if(props.records.length == 0){
+    return <View></View>;
+  }
+  return props.records.map((r) =>{
+    return (
+      <DataBox date={moment(r['date']).format("YYYYMMDD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
+    );
+  });
+};
+
+const alertWithoutButtons = (msg) => {
+  const title = 'Export CSV';
+  const message = msg;
+  const emptyArrayButtons = [
+  ];
+  const alertOptions = {
+    cancelable: true,
+  };
+  Alert.alert(title, message, emptyArrayButtons, alertOptions);
+};
+
+const fetchData = async (endDay) => {
+  const today = new Date();
+  const newRecords = await RecordStore.getRange(
+    moment(today).subtract(endDay, "days"),
+    moment(today).add(1, "days"),
+  );
+  return newRecords;
+}
+
+const exportRecords = async (records) => {
+  const fakeRecords = [
+    {date: "2-12", weight: "53.2", fat: "23.4"},
+    {date: "2-13", weight: "52.5", fat: "21.6"},
+    {date: "1-12", weight: "50.2", fat: "22.0"},
+    {date: "2-15", weight: "56.4", fat: "19.4"},
+  ]
+
+  var status={};
+
+  // CSV comtent.
+  const today = new Date();
+  const nameSuffix = moment(today).format("YYYYMMDD");
+  const headerString = 'date,weight,fat\n';
+  const rowString = fakeRecords.map(d=>d["date"]+","+d["weight"]+","+d["fat"]+"\n").join('');
+  const csvString = `${headerString}${rowString}`;
+
+  // Ask permission and save the file
+  const pathToWrite = FileSystem.documentDirectory+"test"+nameSuffix+".csv";
+  const permissions = await MediaLibrary.requestPermissionsAsync();
+  status['permission'] = permissions;
+  if(permissions.granted){
+    await FileSystem.writeAsStringAsync(pathToWrite,csvString,{encoding: FileSystem.EncodingType.UTF8})
+    .then(()=>{
+      status['error'] = "";
+    }).catch((e)=>{
+      status['error'] = e.toString();
+      status['info'] = "Can't generate file."
+      return status;
+    });
+    // Save tofile to 'CactusBidyWwight' folder in Album('Picture').
+    if (Platform.OS === 'android'){
+      const asset = await MediaLibrary.createAssetAsync(pathToWrite);
+      await MediaLibrary.createAlbumAsync("CactusBidyWwight", asset, false);
+    }
+    // Share the file
+    // Reference: https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
+    if (Platform.OS === 'ios'){
+      const UTI = 'public.item';
+      const shareResult = await Sharing.shareAsync(pathToWrite, {UTI});
+    }
+    status['info'] = "Done saving."
+  }
+  else{
+    status['info'] = "Can't get access."
+  }
+
+  return status;
+}
+
+export const DataHeader = (props) => {
   return (
     <Pressable style = {styles.dataContainer} >
-      <View style = {styles.TextContainer}>
-        <Text style = {styles.floatingText}>
+      <View style = {styles.HeaderContainer}>
+        <Text style = {styles.HeaderFloatingText}>
           Date
         </Text>
       </View>
-      <View style = {styles.TextContainer}>
-        <Text style = {styles.floatingText}>
+      <View style = {styles.HeaderContainer}>
+        <Text style = {styles.HeaderFloatingText}>
           Weight(kg)
         </Text>
       </View>
-      <View style = {styles.TextLastContainer}>
-        <Text style = {styles.floatingText}>
+      <View style = {styles.HeaderLastContainer}>
+        <Text style = {styles.HeaderFloatingText}>
           Fat(%)
         </Text>
       </View>
     </Pressable>
   );
 }
-export const DataBox = (pros) => {
+export const DataBox = (props) => {
   const [isActive, setActive] = React.useState(false);
 
   return (
     <Pressable style = {isActive?styles.dataContainerFocus:styles.dataContainerBlur} onPressIn={()=>{setActive(true)}} onPressOut={()=>{setActive(false)}}>
       <View style = {styles.TextContainer}>
-        <Text style = {styles.floatingText}>
-          {pros.date}
+        <Text style = {styles.FloatingText}>
+          {props.date}
         </Text>
       </View>
       <View style = {styles.TextContainer}>
-        <Text style = {styles.floatingText}>
-          {pros.weight}
+        <Text style = {styles.FloatingText}>
+          {props.weight}
         </Text>
       </View>
       <View style = {styles.TextLastContainer}>
-        <Text style = {styles.floatingText}>
-          {pros.fat}
+        <Text style = {styles.FloatingText}>
+          {props.fat}
         </Text>
       </View>
     </Pressable>
@@ -73,16 +179,32 @@ export const DataBox = (pros) => {
 };
 
 const styles = StyleSheet.create({
-  floatingText:{
-    fontSize: 18,
-    textAlign: "center",
+  FloatingText:{
+    fontSize: 14,
+    textAlign: "left",
+    paddingHorizontal: 15,
+  },
+  HeaderFloatingText:{
+    fontSize: 14,
+    textAlign: "left",
+    paddingHorizontal: 15,
+    color: "white",
+    fontWeight: "bold",
+  },
+  HeaderContainer:{
+    paddingHorizontal: 2,
+    paddingVertical: 12,
+    width: "33%",
   },
   TextContainer:{
     paddingHorizontal: 2,
     paddingVertical: 12,
     width: "33%",
-    borderRightColor: Theme["color-info-500"],
-    borderRightWidth: 1,
+  },
+  HeaderLastContainer:{
+    paddingHorizontal: 2,
+    paddingVertical: 12,
+    width: "33%",
   },
   TextLastContainer:{
     paddingHorizontal: 2,
@@ -94,26 +216,33 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginRight: 10,
     marginLeft: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    backgroundColor: Theme["color-success-400"],
+    borderRadius: 8,
+    paddingTop: 5,
+    paddingBottom: 5,
+    backgroundColor: Theme["color-primary-700"],
   },
   dataContainerFocus:{
     flexDirection: "row",
     flexWrap: "wrap",
     marginRight: 10,
     marginLeft: 10,
-    backgroundColor: Theme["color-info-400"],
+    borderRadius: 8,
+    backgroundColor: Theme["color-info-300"],
+    paddingTop: 6,
+    paddingBottom: 6,
   },
   dataContainerBlur:{
     flexDirection: "row",
     flexWrap: "wrap",
     marginRight: 10,
     marginLeft: 10,
+    borderRadius: 10,
     backgroundColor: Theme["color-info-200"],
+    margin: 1.5,
   },
   container:{
     height: "100%",
+    paddingTop: 8,
   },
   buttonGroup: {
     flexDirection: "row",
@@ -122,8 +251,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export const DataPageFooter = () => {
-  return <Text>Data</Text>;
-}
 
 export default DataPage;
