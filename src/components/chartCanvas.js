@@ -50,8 +50,9 @@ const ChartCanvas = (props) => {
     }
   
     //Compute yMax and yMin
-    const yMax = (props.records.length>0)?Math.ceil(_.max(props.records.map((d)=>d[props.yKey]))/props.interval+1)*props.interval : 100;
-    const yMin = (props.records.length>0)?Math.max(0,Math.floor(_.min(props.records.map((d)=>d[props.yKey]))/props.interval-1)*props.interval) : 0;
+    const yData = props.records.map((d)=>d[props.yKey]);
+    const yMax = getIntervalMax(yData, props.interval);
+    const yMin = getIntervalMin(yData, props.interval);
   
     const yRange = [yMin, yMax];
     const data = {
@@ -157,6 +158,25 @@ const ChartCanvas = (props) => {
     
   }
   
+  const getIntervalMax = (yData, interval) => {
+    if (yData.length > 0 ) {
+      const yMax = _.max(yData);
+      const blocks = Math.ceil(yMax / interval + 1);
+      return blocks * interval;
+    } else { 
+      return 100;
+    }
+  };
+  const getIntervalMin = (yData, interval) =>{
+    if (yData.length > 0) {
+      const yMin = _.min(yData);
+      const blocks = Math.floor(yMin/interval - 1);
+      return Math.max(0, blocks * interval);
+    } else{
+      return 0;
+    }
+  };
+
   const getFocusLocation = (event) =>{
     const { pageX, pageY } = event.nativeEvent;
     return [pageX, pageY];
@@ -169,7 +189,11 @@ const ChartCanvas = (props) => {
   
     // Magic number 15 is left padding.
     const xLocation = location[0] - 15;
-    const closestIdx = _.sortedIndex(dotArray, xLocation);
+    var closestIdx = _.sortedIndex(dotArray, xLocation);
+
+    // make sure closestIdx is in range
+    closestIdx = Math.min(closestIdx, dotArray.length-1);
+
     return closestIdx;
   };
 
