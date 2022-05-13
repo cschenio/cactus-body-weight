@@ -45,6 +45,11 @@ const ChartCanvas = (props) => {
       setXHidden([]);
       setFocusRecords({date: "", weight: "", fat: ""});
     }
+    // when changing the showing data, remove the dot on canvus
+    useEffect(() => {
+      resetAllState();
+    }, [props.records]);
+
     const saveDotXArrayInFirstTime = (tmpArray) => {
       if(_.isNull(dotXArray)){
         setDotXArray(tmpArray);
@@ -101,10 +106,11 @@ const ChartCanvas = (props) => {
             setFocusLocation(getFocusLocation(event));
           }}
           onResponderRelease = {() => {
-            resetAllState();
+            // keep the dot on the canvus when unfoucsing
+            // resetAllState();
           }}
           onResponderReject = {() => {
-            resetAllState();
+            // resetAllState();
           }}
           >
           <LineChart
