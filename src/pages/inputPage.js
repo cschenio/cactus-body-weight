@@ -32,18 +32,18 @@ const InputPage = () => {
           const newRecord = await RecordStore.get(today);
           setRecord(newRecord);
         }}/>
-      {record && <Text>{record}</Text>}
+      {record && <Text>{JSON.stringify(record)}</Text>}
       <Button
         title="Fetch All"
         icon="done-all-outline"
         onPress={async () => {
           const newRecords = await RecordStore.getRange(
-            moment(today).subtract(2, "days"),
+            moment(today).subtract(100, "days"),
             moment(today).add(2, "days"),
           );
           setRecords(newRecords);
         }}/>
-      {records && <Text>{records}</Text>}
+      {records && <Text>{JSON.stringify(records)}</Text>}
     </View>
   );
 }

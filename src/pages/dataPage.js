@@ -27,7 +27,7 @@ const DataPageFotter = () => {
   )
 }
 
-const DataHeader = (pros) => {
+export const DataHeader = (pros) => {
   return (
     <Pressable style = {styles.dataContainer} >
       <View style = {styles.TextContainer}>
@@ -48,7 +48,7 @@ const DataHeader = (pros) => {
     </Pressable>
   );
 }
-const DataBox = (pros) => {
+export const DataBox = (pros) => {
   const [isActive, setActive] = React.useState(false);
 
   return (
