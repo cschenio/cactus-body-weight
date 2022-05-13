@@ -21,29 +21,6 @@ const InputPage = () => {
       <DateBox name="Date:"/>
       <FloatingBox name="Weight:" suffix="kg" maxNum="200" refMain={refWeight} refSubmit={refFat}/>
       <FloatingBox name="Fat:" suffix="%" maxNum="100" refMain={refFat} refSubmit={null}/>
-
-      {/*
-      Below is for testing RecordStore.
-      */}
-      <Button
-        title="Fetch"
-        icon="done-all-outline"
-        onPress={async () => {
-          const newRecord = await RecordStore.get(today);
-          setRecord(newRecord);
-        }}/>
-      {record && <Text>{JSON.stringify(record)}</Text>}
-      <Button
-        title="Fetch All"
-        icon="done-all-outline"
-        onPress={async () => {
-          const newRecords = await RecordStore.getRange(
-            moment(today).subtract(100, "days"),
-            moment(today).add(2, "days"),
-          );
-          setRecords(newRecords);
-        }}/>
-      {records && <Text>{JSON.stringify(records)}</Text>}
     </View>
   );
 }

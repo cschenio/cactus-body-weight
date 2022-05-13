@@ -50,3 +50,16 @@ export const getRange = async (dateBegin, dateEnd) => {
     throw error;
   }
 }
+
+export const getAll = async () => {
+
+  const allKeys = await AsyncStorage.getAllKeys();
+  const keys = allKeys.sort();
+
+  try {
+    const jsonStrings = await AsyncStorage.multiGet(keys);
+    return jsonStrings.map((j) => JSON.parse(j[1]));
+  } catch (error) {
+    throw error;
+  }
+}
