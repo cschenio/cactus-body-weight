@@ -21,7 +21,6 @@ const DataPage = () => {
       <ScrollView style={styles.container}>
         <DataBoxTable records={records} />
       </ScrollView>
-      
     </>
   );
 }
@@ -62,7 +61,7 @@ const DataBoxTable = (props) => {
 
   return props.records.map((r) =>{
     return (
-      <DataBox date={moment(r['date']).format("YYYYMMDD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
+      <DataBox date={moment(r['date']).format("YYYY-MM-DD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
     );
   });
 };
