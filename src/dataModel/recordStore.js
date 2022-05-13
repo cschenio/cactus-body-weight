@@ -63,3 +63,16 @@ export const getAll = async () => {
     throw error;
   }
 }
+
+// Below is for testing RecordStore.
+const GenerateFakeData = async () => {
+  const today = new Date()
+  for(var i=0; i<100; i++){
+    var random_num = Math.random() * 10 - 5;
+    await RecordStore.save({
+      date: moment(today).subtract(i, "days"),
+      weight: 50.0 + i + random_num,
+      fat: 25.0 + i * 0.3 + random_num * 0.3,
+    });
+  }
+}

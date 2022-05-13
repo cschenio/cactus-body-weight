@@ -27,7 +27,9 @@ const ChartCanvas = (props) => {
     const [focusRecords, setFocusRecords] = useState({date: "", weight: "", fat: ""});
     const [xHidden, setXHidden] = useState([]);
     useEffect(() => {
-      if (!_.isNull(closestDotIdx) && props.records.length>0 ) {
+      if (!_.isNull(closestDotIdx) && props.records.length <= closestDotIdx){
+        setClosestDotIdx(props.records.length-1);
+      } else if (!_.isNull(closestDotIdx)) {
         setXHidden(_.range(0, closestDotIdx).concat(_.range(closestDotIdx+1, dotXArray.length)));
         setFocusRecords({
           date: moment(props.records[closestDotIdx]["date"]).format("YYYY-MM-DD"),
@@ -190,9 +192,6 @@ const ChartCanvas = (props) => {
     // Magic number 15 is left padding.
     const xLocation = location[0] - 15;
     var closestIdx = _.sortedIndex(dotArray, xLocation);
-
-    // make sure closestIdx is in range
-    closestIdx = Math.min(closestIdx, dotArray.length-1);
 
     return closestIdx;
   };
