@@ -27,7 +27,7 @@ const ChartCanvas = (props) => {
     const [focusRecords, setFocusRecords] = useState({date: "", weight: "", fat: ""});
     const [xHidden, setXHidden] = useState([]);
     useEffect(() => {
-      if (!_.isNull(closestDotIdx)) {
+      if (!_.isNull(closestDotIdx) && props.records.length>0 ) {
         setXHidden(_.range(0, closestDotIdx).concat(_.range(closestDotIdx+1, dotXArray.length)));
         setFocusRecords({
           date: moment(props.records[closestDotIdx]["date"]).format("YYYY-MM-DD"),
