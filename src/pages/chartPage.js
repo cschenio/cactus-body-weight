@@ -16,42 +16,49 @@ const ChartPage = () => {
   }, []);
 
   return( 
-    <View style={styles.buttonGroup}>
-      <Button
-        title="1 week"
+    <View>
+      <View>
+        <Button
+          title="1 week"
+          onPress={async () => {
+            const newRecords = await getPassRecords(7);
+            setRecords(newRecords);
+            setLegend("-Day (1 week ago)");
+          }}
+          />
+        <Button
+        title="1 month"
         onPress={async () => {
-          const newRecords = await getPassRecords(7);
+          const newRecords = await getPassRecords(30);
           setRecords(newRecords);
-          setLegend("-Day (1 week ago)");
-        }}/>
-      <Button
-      title="1 month"
-      onPress={async () => {
-        const newRecords = await getPassRecords(30);
-        setRecords(newRecords);
-        setLegend("-Day (1 month ago)");
-      }}/>
-      <Button
-      title="3 month"
-      onPress={async () => {
-        const newRecords = await getPassRecords(90);
-        setRecords(newRecords);
-        setLegend("-Day (3 months ago)");
-      }}/>
-      <ChartCanvas
-        records = {records}
-        legend = {"Weight"+legend}
-        yKey = {"weight"}
-        interval = {10}
-        ySuffix = {"kg"}
-      />
-      <ChartCanvas
-        records = {records}
-        legend = {"Fat"+legend}
-        yKey = {"fat"}
-        interval = {1}
-        ySuffix = {"%"}
-      />
+          setLegend("-Day (1 month ago)");
+          }}
+        />
+        <Button
+        title="3 month"
+        onPress={async () => {
+          const newRecords = await getPassRecords(90);
+          setRecords(newRecords);
+          setLegend("-Day (3 months ago)");
+          }}
+        />
+      </View>
+      <View style={styles.dataBox}>
+        <ChartCanvas
+          records = {records}
+          legend = {"Weight"+legend}
+          yKey = {"weight"}
+          interval = {10}
+          ySuffix = {"kg"}
+        />
+        <ChartCanvas
+          records = {records}
+          legend = {"Fat"+legend}
+          yKey = {"fat"}
+          interval = {1}
+          ySuffix = {"%"}
+        />
+      </View>
     </View>
   )
 }
@@ -70,11 +77,12 @@ const getPassRecords = async(dayCount) =>{
 }
 
 const styles = StyleSheet.create({
-  buttonGroup: {
+  dataBox: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
   },
+  
 });
 
 export default ChartPage;

@@ -240,11 +240,6 @@ const styles = StyleSheet.create({
     height: "100%",
     paddingTop: 8,
   },
-  buttonGroup: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-  },
 });
 
 
