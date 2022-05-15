@@ -3,6 +3,7 @@ import * as Theme from "@assets/theme.json";
 import {StyleSheet, Text, Alert, View, ScrollView, Pressable} from 'react-native';
 import Button from "components/button";
 import moment from "moment";
+import * as _ from "lodash";
 import * as RecordStore from "dataModel/recordStore";
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
@@ -11,7 +12,7 @@ import * as Sharing from "expo-sharing";
 const DataPage = () => {
   const [records, setRecords] = React.useState([]);
   useEffect(async () => { 
-    setRecords(await fetchData(500));
+    setRecords(await RecordStore.getAll());
   }, []);
 
   return (
@@ -20,34 +21,21 @@ const DataPage = () => {
       <ScrollView style={styles.container}>
         <DataBoxTable records={records} />
       </ScrollView>
-      
     </>
   );
 }
 
 export const DataPageFooter = () => {
-  const [info, setInfo] = React.useState("");
-  const [firstTime, setFirstTime] = React.useState(true);
-  useEffect(()=>{
-    setFirstTime(false);
-  });
-  useEffect(() => { 
-    if (!firstTime){
-      // No idea how to set useEffect to avoid runining alert in the first render.
-      alertWithoutButtons(info);
-    }
-  }, [info]);
-
   return (
     <View style={styles.buttonGroup}>
       <Button 
         title="Export" 
         icon="download-outline" 
         onPress = {async () => {
-          const newRecords = await fetchData(50);
+          const newRecords = await RecordStore.getAll();
           const exportStatus = await exportRecords(newRecords);
-          setInfo(exportStatus["info"]);
-      }}/>
+          alertWithoutButtons(exportStatus["info"]);
+    }}/>
     </View>
   )
 }
@@ -56,9 +44,12 @@ const DataBoxTable = (props) => {
   if(props.records.length == 0){
     return <View></View>;
   }
+  // reverse the records from new to old
+  _.reverse(props.records);
+
   return props.records.map((r) =>{
     return (
-      <DataBox date={moment(r['date']).format("YYYYMMDD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
+      <DataBox date={moment(r['date']).format("YYYY-MM-DD")} weight={r["weight"].toFixed(2)} fat={r['fat'].toFixed(2)} />
     );
   });
 };
@@ -84,25 +75,19 @@ const fetchData = async (endDay) => {
 }
 
 const exportRecords = async (records) => {
-  const fakeRecords = [
-    {date: "2-12", weight: "53.2", fat: "23.4"},
-    {date: "2-13", weight: "52.5", fat: "21.6"},
-    {date: "1-12", weight: "50.2", fat: "22.0"},
-    {date: "2-15", weight: "56.4", fat: "19.4"},
-  ]
-
   var status={};
 
   // CSV comtent.
   const today = new Date();
   const nameSuffix = moment(today).format("YYYYMMDD");
   const headerString = 'date,weight,fat\n';
-  const rowString = fakeRecords.map(d=>d["date"]+","+d["weight"]+","+d["fat"]+"\n").join('');
+  const rowString = records.map(d=>d["date"]+","+d["weight"]+","+d["fat"]+"\n").join('');
   const csvString = `${headerString}${rowString}`;
 
   // Ask permission and save the file
-  const pathToWrite = FileSystem.documentDirectory+"test"+nameSuffix+".csv";
-  const permissions = await MediaLibrary.requestPermissionsAsync();
+  const pathToWrite = FileSystem.documentDirectory+"CactusBodyWeight_"+nameSuffix+".csv";
+  status['path'] = pathToWrite;
+  const permissions = await MediaLibrary.requestPermissionsAsync(true);
   status['permission'] = permissions;
   if(permissions.granted){
     await FileSystem.writeAsStringAsync(pathToWrite,csvString,{encoding: FileSystem.EncodingType.UTF8})
@@ -115,8 +100,7 @@ const exportRecords = async (records) => {
     });
     // Save tofile to 'CactusBodyWeight' folder in Album('Picture').
     if (Platform.OS === 'android'){
-      const asset = await MediaLibrary.createAssetAsync(pathToWrite);
-      await MediaLibrary.createAlbumAsync("CactusBodyWeight", asset, false);
+      const shareResult = await Sharing.shareAsync(pathToWrite);
     }
     // Share the file
     // Reference: https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
@@ -124,10 +108,10 @@ const exportRecords = async (records) => {
       const UTI = 'public.item';
       const shareResult = await Sharing.shareAsync(pathToWrite, {UTI});
     }
-    status['info'] = "Done saving."
+    status['info'] = "Done saving.";
   }
   else{
-    status['info'] = "Can't get access."
+    status['info'] = "Can't get access.";
   }
 
   return status;
@@ -243,11 +227,6 @@ const styles = StyleSheet.create({
   container:{
     height: "100%",
     paddingTop: 8,
-  },
-  buttonGroup: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
   },
 });
 
