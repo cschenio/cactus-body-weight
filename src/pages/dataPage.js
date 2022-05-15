@@ -26,18 +26,6 @@ const DataPage = () => {
 }
 
 export const DataPageFooter = () => {
-  const [info, setInfo] = React.useState("");
-  const [firstTime, setFirstTime] = React.useState(true);
-  useEffect(()=>{
-    setFirstTime(false);
-  });
-  useEffect(() => { 
-    if (!firstTime){
-      // No idea how to set useEffect to avoid runining alert in the first render.
-      alertWithoutButtons(info);
-    }
-  }, [info]);
-
   return (
     <View style={styles.buttonGroup}>
       <Button 
@@ -46,8 +34,8 @@ export const DataPageFooter = () => {
         onPress = {async () => {
           const newRecords = await RecordStore.getAll();
           const exportStatus = await exportRecords(newRecords);
-          setInfo(exportStatus["info"]);
-      }}/>
+          alertWithoutButtons(exportStatus["info"]);
+    }}/>
     </View>
   )
 }
@@ -98,7 +86,8 @@ const exportRecords = async (records) => {
 
   // Ask permission and save the file
   const pathToWrite = FileSystem.documentDirectory+"CactusBodyWeight_"+nameSuffix+".csv";
-  const permissions = await MediaLibrary.requestPermissionsAsync();
+  status['path'] = pathToWrite;
+  const permissions = await MediaLibrary.requestPermissionsAsync(true);
   status['permission'] = permissions;
   if(permissions.granted){
     await FileSystem.writeAsStringAsync(pathToWrite,csvString,{encoding: FileSystem.EncodingType.UTF8})
@@ -111,8 +100,7 @@ const exportRecords = async (records) => {
     });
     // Save tofile to 'CactusBodyWeight' folder in Album('Picture').
     if (Platform.OS === 'android'){
-      const asset = await MediaLibrary.createAssetAsync(pathToWrite);
-      await MediaLibrary.createAlbumAsync("CactusBodyWeight", asset, false);
+      const shareResult = await Sharing.shareAsync(pathToWrite);
     }
     // Share the file
     // Reference: https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
@@ -120,10 +108,10 @@ const exportRecords = async (records) => {
       const UTI = 'public.item';
       const shareResult = await Sharing.shareAsync(pathToWrite, {UTI});
     }
-    status['info'] = "Done saving."
+    status['info'] = "Done saving.";
   }
   else{
-    status['info'] = "Can't get access."
+    status['info'] = "Can't get access.";
   }
 
   return status;
